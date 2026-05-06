@@ -76,11 +76,10 @@ def build_message(
 
     return (
         f"<b>LAB/USDT · {now}</b>\n\n"
-        f"📈 Futures (AsterDEX): <code>{futures_price:.5f}</code>\n"
-        f"💰 Spot   (Bitget):    <code>{spot_price:.5f}</code>\n\n"
-        f"{arrow} <b>Спред:</b> <code>{spread:+.5f}</code>  (<code>{spread_pct:+.3f}%</code>)\n"
-        f"💸 <b>Funding (1h):</b> <code>{funding_pct:+.4f}%</code>  "
-        f"(через {mins_to_funding} мин)"
+        f"📈 Futures (AsterDEX):  <b>{futures_price:.5f}</b>\n"
+        f"💰 Spot   (Bitget):     <b>{spot_price:.5f}</b>\n\n"
+        f"{arrow} Спред:  <b>{spread:+.5f}</b>  ({spread_pct:+.3f}%)\n"
+        f"💸 Funding (1h):  <b>{funding_pct:+.4f}%</b>  (через {mins_to_funding} мин)"
     )
 
 
