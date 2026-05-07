@@ -19,7 +19,8 @@ SYMBOL = "LABUSDT"
 INTERVAL = 60  # seconds
 
 ASTERDEX_PREMIUM_URL = "https://fapi.asterdex.com/fapi/v1/premiumIndex"
-BITGET_TICKER_URL = "https://api.bitget.com/api/v2/spot/market/tickers"
+GATE_TICKER_URL = "https://api.gateio.ws/api/v4/spot/tickers"
+GATE_PAIR = "LAB_USDT"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; SpreadBot/1.0)",
@@ -43,16 +44,16 @@ async def fetch_asterdex(client: httpx.AsyncClient) -> dict:
     }
 
 
-async def fetch_bitget(client: httpx.AsyncClient) -> float:
+async def fetch_gate(client: httpx.AsyncClient) -> float:
     r = await client.get(
-        BITGET_TICKER_URL,
-        params={"symbol": SYMBOL},
+        GATE_TICKER_URL,
+        params={"currency_pair": GATE_PAIR},
         headers=HEADERS,
         timeout=10,
     )
     r.raise_for_status()
     data = r.json()
-    return float(data["data"][0]["lastPr"])
+    return float(data[0]["last"])
 
 
 def build_message(
@@ -76,7 +77,7 @@ def build_message(
 
     return (
         f"<b>LAB/USDT · {now}</b>\n\n"
-        f"💰 Spot   Bitget:    <b>{spot_price:.5f}</b>\n"
+        f"💰 Spot   Gate:      <b>{spot_price:.5f}</b>\n"
         f"📈 Futures AsterDEX: <b>{futures_price:.5f}</b>\n\n"
         f"{arrow} Спред:  <b>{spread:+.5f}</b>  ({spread_pct:+.3f}%)\n"
         f"💸 Funding (1h):  <b>{funding_pct:+.4f}%</b>  (через {mins_to_funding} мин)"
@@ -92,7 +93,7 @@ async def main() -> None:
             try:
                 aster, spot_price = await asyncio.gather(
                     fetch_asterdex(client),
-                    fetch_bitget(client),
+                    fetch_gate(client),
                 )
                 text = build_message(
                     futures_price=aster["mark_price"],
